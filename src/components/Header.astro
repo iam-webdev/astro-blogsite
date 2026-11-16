@@ -1,0 +1,81 @@
+
+---
+---
+
+<!-- ======================================
+     SHARED RESPONSIVE NAVIGATION
+======================================= -->
+
+<header class="site-header">
+
+  <nav class="navbar container" aria-label="Main navigation">
+
+    <!-- BRAND -->
+    <a
+      href="/"
+      class="brand"
+      aria-label="The Gray Journal homepage"
+    >
+      <span class="brand-mark">G.</span>
+      <span>The Gray Journal</span>
+    </a>
+
+    <!-- MOBILE HAMBURGER BUTTON -->
+    <button
+      class="nav-toggle"
+      id="navToggle"
+      type="button"
+      aria-label="Open navigation menu"
+      aria-expanded="false"
+      aria-controls="primary-navigation"
+    >
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+
+    <!-- NAVIGATION MENU -->
+    <div class="nav-menu" id="primary-navigation">
+
+      <div class="nav-links">
+
+        <a href="/" class="nav-link">
+          Home
+        </a>
+
+        <a href="/#about" class="nav-link">
+          About
+        </a>
+
+        <a href="/#articles" class="nav-link">
+          Articles
+        </a>
+
+        <a href="/blog/" class="nav-link">
+          Blog
+        </a>
+
+      </div>
+
+      <!-- EXISTING THEME TOGGLE -->
+      <button
+        class="theme-toggle"
+        id="themeToggle"
+        type="button"
+        aria-label="Switch to dark theme"
+      >
+        <span id="themeIcon" aria-hidden="true">☾</span>
+        <span id="themeLabel">Dark Mode</span>
+      </button>
+
+    </div>
+
+  </nav>
+
+</header>
+
+<!-- EXTERNAL JAVASCRIPT -->
+<script>
+  import "../scripts/theme.js";
+  import "../scripts/navigation.js";
+</script>

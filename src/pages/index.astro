@@ -1,0 +1,386 @@
+
+---
+import Header from "../components/Header.astro";
+import "../styles/global.css";
+import { getCollection } from "astro:content";
+
+const siteName = "The Gray Journal";
+
+const pageTitle =
+  "The Gray Journal | Technology, Creativity & Inspiration";
+
+const pageDescription =
+  "Explore The Gray Journal, a personal blog sharing ideas, technology, coding, creativity, learning, personal experiences, and everyday inspiration.";
+
+const heroImage =
+  "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1800&q=85";
+
+const socialImage =
+  "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1200&h=630&q=85";
+
+// RETRIEVE PUBLISHED BLOG POSTS
+const posts = await getCollection(
+  "blog",
+  ({ data }) => data.draft !== true
+);
+
+// SORT BY PUBLICATION DATE AND GET LATEST 3
+const latestPosts = posts
+  .sort(
+    (a, b) =>
+      b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  )
+  .slice(0, 3);
+---
+
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <!-- BASIC SEO -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{pageTitle}</title>
+
+    <meta name="description" content={pageDescription} />
+    <meta name="author" content={siteName} />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#f4f4f2" />
+
+    <!-- OPEN GRAPH SEO -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:image" content={socialImage} />
+
+    <meta
+      property="og:image:alt"
+      content="Modern minimalist architectural photography"
+    />
+
+    <!-- TWITTER / X SEO -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={socialImage} />
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  </head>
+
+  <body>
+
+
+  <Header />
+
+    <main>
+
+      <!-- ======================================
+           HERO SECTION
+      ======================================= -->
+
+      <section class="hero container" id="home">
+
+        <div class="hero-content">
+
+          <span class="eyebrow">
+            <span class="status-dot"></span>
+            A PERSONAL SPACE FOR IDEAS
+          </span>
+
+          <h1>
+            Thoughts, stories
+            <span>& everything</span>
+            in between.
+          </h1>
+
+          <p class="hero-description">
+            Welcome to my little corner of the internet.
+            A place where I share ideas, explore creativity,
+            document experiences, and find inspiration
+            in everyday life.
+          </p>
+
+          <div class="hero-actions">
+
+            <a href="#about" class="button button-primary">
+              Discover More <span>↗</span>
+            </a>
+
+            <a href="#about" class="button button-secondary">
+              About This Blog
+            </a>
+
+          </div>
+
+          <div class="hero-meta">
+
+            <span>PERSONAL BLOG</span>
+
+            <span class="meta-divider"></span>
+
+            <span>EST. 2026</span>
+
+          </div>
+
+        </div>
+
+
+        <div class="hero-image-wrapper">
+
+          <img
+            src={heroImage}
+            alt="Modern minimalist architectural building with clean geometric lines"
+            class="hero-image"
+            fetchpriority="high"
+            decoding="async"
+          />
+
+          <div class="image-caption">
+
+            <span>01 / THE JOURNAL</span>
+
+            <span>Ideas & Inspiration</span>
+
+          </div>
+
+          <div class="image-decoration">
+            GJ.
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ======================================
+           ABOUT SECTION
+      ======================================= -->
+
+      <section class="about-section" id="about">
+
+        <div class="container about-container">
+
+          <div class="about-heading">
+
+            <span class="section-label">
+              01 — ABOUT
+            </span>
+
+            <h2>
+              More than just
+              <span>a blog.</span>
+            </h2>
+
+          </div>
+
+
+          <div class="about-content">
+
+            <p class="about-lead">
+              A digital space built around curiosity,
+              creativity, and the little things that make
+              life interesting.
+            </p>
+
+            <p class="about-description">
+              The Gray Journal is a personal collection of
+              thoughts, experiences, discoveries, and ideas.
+              It's where I document my journey, share what
+              I learn, and connect with people through words
+              and stories.
+            </p>
+
+            <p class="about-description">
+              Whether it's technology, creativity, personal
+              growth, or everyday inspiration, there's
+              always something worth exploring.
+            </p>
+
+            <a href="#articles" class="text-link">
+              Explore the journal <span>→</span>
+            </a>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      
+      <!-- ======================================
+          LATEST ARTICLES SECTION
+      ======================================= -->
+
+      <section class="articles-section" id="articles">
+
+        <div class="container">
+
+          <!-- SECTION HEADER -->
+          <div class="articles-header">
+
+            <div class="articles-heading">
+
+              <span class="section-label">
+                02 — THE JOURNAL
+              </span>
+
+              <h2>
+                Latest <span>Stories.</span>
+              </h2>
+
+              <p>
+                Thoughts, discoveries, and experiences
+                worth sharing.
+              </p>
+
+            </div>
+
+            <div class="articles-header-meta">
+              <span>RECENTLY PUBLISHED</span>
+            </div>
+
+          </div>
+
+          <!-- THREE ARTICLE CARDS -->
+          {latestPosts.length > 0 ? (
+
+            <div class="blog-grid">
+
+              {latestPosts.map((post) => (
+
+                <article class="blog-card">
+
+                  <!-- ARTICLE IMAGE -->
+                  {post.data.image && (
+
+                    <a
+                      href={`/blog/${post.id}/`}
+                      class="blog-card-image-link"
+                      aria-label={`Read ${post.data.title}`}
+                    >
+                      <img
+                        src={post.data.image}
+                        alt={post.data.title}
+                        class="blog-card-image"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </a>
+
+                  )}
+
+                  <!-- ARTICLE CONTENT -->
+                  <div class="blog-card-content">
+
+                    <div class="blog-card-meta">
+
+                      {post.data.category && (
+                        <span class="blog-category">
+                          {post.data.category}
+                        </span>
+                      )}
+
+                      <time datetime={post.data.pubDate.toISOString()}>
+                        {post.data.pubDate.toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric"
+                          }
+                        )}
+                      </time>
+
+                    </div>
+
+                    <h3 class="blog-card-title">
+                      <a href={`/blog/${post.id}/`}>
+                        {post.data.title}
+                      </a>
+                    </h3>
+
+                    <p class="blog-card-description">
+                      {post.data.description}
+                    </p>
+
+                    <a
+                      href={`/blog/${post.id}/`}
+                      class="blog-card-link"
+                    >
+                      Read Article <span>↗</span>
+                    </a>
+
+                  </div>
+
+                </article>
+
+              ))}
+
+            </div>
+
+          ) : (
+
+            <div class="no-articles">
+              <p>No articles published yet.</p>
+            </div>
+
+          )}
+
+          <!-- EXPLORE MORE BUTTON -->
+          <div class="articles-footer">
+
+            <a href="/blog/" class="button button-primary">
+              Explore More <span>↗</span>
+            </a>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+    </main>
+
+
+    <!-- ======================================
+         FOOTER
+    ======================================= -->
+
+    <footer class="site-footer">
+
+      <div class="container footer-content">
+
+        <a href="#home" class="brand footer-brand">
+
+          <span class="brand-mark">G.</span>
+
+          <span>The Gray Journal</span>
+
+        </a>
+
+        <p>
+          © 2026 The Gray Journal. All rights reserved.
+        </p>
+
+        <a href="#home" class="back-to-top">
+          Back to top ↑
+        </a>
+
+      </div>
+
+    </footer>
+
+
+    <!-- EXTERNAL THEME JAVASCRIPT -->
+
+    <script>
+      import "../scripts/theme.js";
+    </script>
+
+  </body>
+</html>
