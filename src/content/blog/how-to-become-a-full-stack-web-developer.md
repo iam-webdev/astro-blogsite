@@ -11,7 +11,7 @@ tags:
   - CSS
   - JavaScript
   - Programming
-image: "/images/full-stack-web.jpg"
+image: "public/images/full-stack-web.jpg"
 draft: false
 ---
 
