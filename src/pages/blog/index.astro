@@ -4,6 +4,25 @@ import Header from "../../components/Header.astro";
 import { getCollection } from "astro:content";
 import "../../styles/global.css";
 
+// GitHub Pages project base path
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+// Public assets are served without the `public/` folder in their URLs.
+function getImageUrl(imagePath: string) {
+  if (!imagePath) return "";
+  if (/^(https?:)?\/\//i.test(imagePath) || imagePath.startsWith("data:")) {
+    return imagePath;
+  }
+  const cleanPath = imagePath.replace(/^\/+/, "").replace(/^public\//, "");
+  return `${base}${cleanPath}`;
+}
+
+function getPostUrl(post: { id: string }) {
+  return `${base}blog/${post.id}/`;
+}
+
 const siteName = "The Gray Journal";
 
 const pageTitle = "The Journal | The Gray Journal";
@@ -59,7 +78,7 @@ const formatDate = (date: Date) => {
     <meta name="twitter:description" content={pageDescription} />
     <meta name="twitter:image" content={socialImage} />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
   </head>
 
   <body class="blog-page">
@@ -127,14 +146,14 @@ const formatDate = (date: Date) => {
               <article class="blog-card">
 
                 <a
-                  href={`/blog/${post.id}/`}
+                  href={getPostUrl(post)}
                   class="blog-card-image-link"
                   aria-label={`Read ${post.data.title}`}
                 >
 
                   {post.data.image ? (
                     <img
-                      src={post.data.image}
+                      src={getImageUrl(post.data.image)}
                       alt={post.data.title}
                       class="blog-card-image"
                       loading="lazy"
@@ -161,7 +180,7 @@ const formatDate = (date: Date) => {
                   </div>
 
                   <h3>
-                    <a href={`/blog/${post.id}/`}>
+                    <a href={getPostUrl(post)}>
                       {post.data.title}
                     </a>
                   </h3>
@@ -177,7 +196,7 @@ const formatDate = (date: Date) => {
                     </span>
 
                     <a
-                      href={`/blog/${post.id}/`}
+                      href={getPostUrl(post)}
                       class="text-link"
                     >
                       Read Article <span>→</span>
@@ -233,7 +252,7 @@ const formatDate = (date: Date) => {
             Keep exploring, keep learning, and stay curious.
           </p>
 
-          <a href="/" class="button button-primary">
+          <a href={base} class="button button-primary">
             Back to Home <span>↗</span>
           </a>
 
@@ -248,7 +267,7 @@ const formatDate = (date: Date) => {
 
       <div class="container footer-content">
 
-        <a href="/" class="brand footer-brand">
+        <a href={base} class="brand footer-brand">
           <span class="brand-mark">G.</span>
           <span>The Gray Journal</span>
         </a>
