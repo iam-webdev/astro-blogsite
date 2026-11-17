@@ -4,6 +4,7 @@ import Header from "../../components/Header.astro";
 import { getCollection, render } from "astro:content";
 import "../../styles/global.css";
 
+// Generate a page for every published blog post
 export async function getStaticPaths() {
   const posts = await getCollection("blog", ({ data }) => {
     return data.draft !== true;
@@ -19,19 +20,60 @@ const { post } = Astro.props;
 
 const { Content } = await render(post);
 
+// ======================================
+// GITHUB PAGES BASE PATH
+// ======================================
+
+const base = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+// Convert public image paths to deployment-safe URLs
+function getImageUrl(imagePath) {
+  if (!imagePath) return null;
+
+  // Preserve external images
+  if (/^(https?:)?\/\//i.test(imagePath) || imagePath.startsWith("data:")) {
+    return imagePath;
+  }
+
+  // Remove public/ and leading slashes
+  const cleanPath = imagePath
+    .replace(/^\/+/, "")
+    .replace(/^public\//, "");
+
+  return `${base}${cleanPath}`;
+}
+
+const imageUrl = getImageUrl(post.data.image);
+
+// ======================================
+// PAGE METADATA
+// ======================================
+
 const siteName = "The Gray Journal";
 const pageTitle = `${post.data.title} | ${siteName}`;
 const pageDescription = post.data.description;
 
-const socialImage =
-  post.data.image ||
-  "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1200&h=630&q=85";
+const socialImage = imageUrl
+  ? new URL(imageUrl, Astro.site ?? Astro.url).href
+  : "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1200&h=630&q=85";
 
 const formattedDate = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   month: "long",
   day: "numeric",
 }).format(post.data.pubDate);
+
+const publishedDate = post.data.pubDate.toISOString();
+
+// ======================================
+// NAVIGATION URLS
+// ======================================
+
+const homeUrl = base;
+const blogUrl = `${base}blog/`;
+const faviconUrl = `${base}favicon.svg`;
 ---
 
 <!doctype html>
@@ -52,31 +94,43 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:image" content={socialImage} />
-    <meta property="article:published_time" content={post.data.pubDate.toISOString()} />
-    <meta property="article:author" content={post.data.author} />
+    <meta
+      property="article:published_time"
+      content={publishedDate}
+    />
+    <meta
+      property="article:author"
+      content={post.data.author}
+    />
 
     <!-- TWITTER / X -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={pageDescription} />
+    <meta
+      name="twitter:description"
+      content={pageDescription}
+    />
     <meta name="twitter:image" content={socialImage} />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- FAVICON -->
+    <link rel="icon" href={faviconUrl} />
   </head>
 
   <body class="article-page">
 
-  <Header />
+    <!-- SHARED HEADER -->
+    <Header />
 
     <main>
 
-      <!-- ARTICLE HEADER -->
       <article class="container article-container">
 
-        <a href="/blog/" class="article-back-link">
+        <!-- BACK TO ARTICLES -->
+        <a href={blogUrl} class="article-back-link">
           ← Back to Articles
         </a>
 
+        <!-- ARTICLE HEADER -->
         <header class="article-header">
 
           <span class="section-label">
@@ -92,7 +146,8 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
           <div class="article-meta">
             <span>By {post.data.author}</span>
             <span class="meta-divider"></span>
-            <time datetime={post.data.pubDate.toISOString()}>
+
+            <time datetime={publishedDate}>
               {formattedDate}
             </time>
           </div>
@@ -100,21 +155,20 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
         </header>
 
         <!-- FEATURED IMAGE -->
-        {post.data.image && (
+        {imageUrl && (
           <div class="article-featured-image">
             <img
-              src={post.data.image}
+              src={imageUrl}
               alt={post.data.title}
               fetchpriority="high"
+              decoding="async"
             />
           </div>
         )}
 
         <!-- ARTICLE CONTENT -->
         <div class="article-content">
-
           <Content />
-
         </div>
 
         <!-- TAGS -->
@@ -132,12 +186,18 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
         <footer class="article-footer">
 
           <div>
-            <span class="section-label">THE GRAY JOURNAL</span>
+            <span class="section-label">
+              THE GRAY JOURNAL
+            </span>
+
             <h2>Thank you for reading.</h2>
-            <p>Keep exploring, learning, and finding inspiration.</p>
+
+            <p>
+              Keep exploring, learning, and finding inspiration.
+            </p>
           </div>
 
-          <a href="/blog/" class="button button-primary">
+          <a href={blogUrl} class="button button-primary">
             Explore More Articles <span>↗</span>
           </a>
 
@@ -147,12 +207,12 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
 
     </main>
 
-    <!-- FOOTER -->
+    <!-- WEBSITE FOOTER -->
     <footer class="site-footer">
 
       <div class="container footer-content">
 
-        <a href="/" class="brand footer-brand">
+        <a href={homeUrl} class="brand footer-brand">
           <span class="brand-mark">G.</span>
           <span>The Gray Journal</span>
         </a>
@@ -162,7 +222,7 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
           All rights reserved.
         </p>
 
-        <a href="/" class="back-to-top">
+        <a href={homeUrl} class="back-to-top">
           Back to Home ↑
         </a>
 
@@ -173,6 +233,7 @@ const formattedDate = new Intl.DateTimeFormat("en-US", {
   </body>
 </html>
 
+<!-- THEME JAVASCRIPT -->
 <script>
   import "../../scripts/theme.js";
 </script>
